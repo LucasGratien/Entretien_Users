@@ -1,11 +1,10 @@
 package edu.camupus.numerique.entretien.service;
-import edu.camupus.numerique.entretien.dto.User;
+import edu.camupus.numerique.entretien.dto.Cars;
 import edu.camupus.numerique.entretien.model.Entretien;
 import edu.camupus.numerique.entretien.model.EntretienNotFound;
 import edu.camupus.numerique.entretien.model.EntretienRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.springframework.web.client.DefaultResponseErrorHandler;
 import org.springframework.web.client.RestTemplate;
 
 import java.time.LocalDate;
@@ -22,9 +21,9 @@ public class EntretienService {
         this.entretienRepository = entretienRepository;
         this.restTemplate = restTemplate;
     }
-    public User getUsersData(int userId) {
-        String url = "http://users/api/users/" + userId;
-        return restTemplate.getForObject(url, User.class);
+    public Cars getVehiclesData(int vehiclesId) {
+        String url = "http://CarLocation/vehicles/" + vehiclesId;
+        return restTemplate.getForObject(url, Cars.class);
     }
 
 

@@ -1,5 +1,5 @@
 package edu.camupus.numerique.entretien.controller;
-import edu.camupus.numerique.entretien.dto.User;
+import edu.camupus.numerique.entretien.dto.Cars;
 import edu.camupus.numerique.entretien.model.Entretien;
 import edu.camupus.numerique.entretien.service.EntretienService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -10,6 +10,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import edu.camupus.numerique.entretien.model.EntretienNotFound;
 import org.springframework.web.bind.annotation.*;
@@ -24,9 +25,9 @@ public class EntretienController {
     public EntretienController(EntretienService entretienService) {
         this.entretienService = entretienService;
     }
-    @GetMapping("/user/{userId}")
-    public User getUserFromEntretien(@PathVariable int userId) {
-        return entretienService.getUsersData(userId);
+    @GetMapping("/vehicles/{vehiclesId}")
+    public Cars getCarsFromEntretien(@PathVariable int vehiclesId) {
+        return entretienService.getVehiclesData(vehiclesId);
     }
     @Operation(summary = "Récupération de tous les entretien")
     @ApiResponses(value = {
@@ -59,8 +60,9 @@ public class EntretienController {
                     content = @Content(mediaType = "application/json"))
     })
     @GetMapping("/{id}")
-    public Entretien getEntretienById(@PathVariable int id) {
-        return entretienService.findById(id).orElseThrow(EntretienNotFound::new);
+    public ResponseEntity<Entretien> getEntretienById(@PathVariable int id) {
+        Entretien entretien = entretienService.findById(id).orElseThrow(EntretienNotFound::new);
+        return ResponseEntity.ok(entretien);
     }
     @Operation(summary = "Ajoute un nouvel entretien")
     @ApiResponses(value = {
@@ -74,8 +76,9 @@ public class EntretienController {
                     content = @Content(mediaType = "application/json"))
     })
     @PostMapping
-    public Entretien createEntretien(@RequestBody Entretien entretien) {
-        return entretienService.save(entretien);
+    public ResponseEntity<Entretien> createEntretien(@RequestBody Entretien entretien) {
+    Entretien createdEntretien = entretienService.save(entretien);
+        return ResponseEntity.status(HttpStatus.CREATED).body(createdEntretien);
     }
     @Operation(summary = "Met à jour un entretien existant")
     @ApiResponses(value = {
@@ -90,7 +93,7 @@ public class EntretienController {
             @ApiResponse(responseCode = "400", description = "Requête invalide",
                     content = @Content(mediaType = "application/json"))
     })
-    @PutMapping
+    @PutMapping("/{id}")
     public ResponseEntity<Entretien> updateEntretien(@PathVariable int id, @RequestBody Entretien entretien) {
         return ResponseEntity.ok(entretienService.update(id, entretien));
     }
@@ -101,6 +104,7 @@ public class EntretienController {
                     content = @Content(mediaType = "application/json"))
     })
     @DeleteMapping("/{id}")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
     public void deleteEntretien(@PathVariable int id) {
         entretienService.deleteById(id);
     }
